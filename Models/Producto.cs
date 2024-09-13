@@ -1,5 +1,7 @@
-namespace ComicsAPI.Models {
-  public class Producto {
+namespace ComicsAPI.Models
+{
+  public class Producto
+  {
     public int Id { get; set; }
     public required string Titulo { get; set; }
     public required string Autor { get; set; }
@@ -9,5 +11,8 @@ namespace ComicsAPI.Models {
     public decimal Precio { get; set; }
     public required string ImageURL { get; set; }
     public required string Descripcion { get; set; }
+
+    public int CategoriaId { get; set; }
+    public required Categoria Categoria { get; set; }
   }
 }
