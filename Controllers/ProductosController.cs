@@ -1,12 +1,11 @@
 using ComicsAPI.Data;
 using ComicsAPI.Models;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace ComicsAPI.Controllers
 {
-  [Route("api/[controller]")]
+  [Route("api/productos")]
   [ApiController]
   public class ProductosController : ControllerBase
   {
@@ -17,15 +16,8 @@ namespace ComicsAPI.Controllers
     }
 
     // PRODUCTOS
-    [HttpGet("productos")]
-    public async Task<ActionResult<IEnumerable<Producto>>> GetProductos()
-    {
-      return await _context.Productos.ToListAsync();
-    }
-
-    [HttpGet]
-    public async Task<ActionResult<IEnumerable<Producto>>> GetProductos(
-      string? titulo, string? autor, string? editorial, string? genero, decimal? precioMin, decimal? precioMax
+    [HttpGet()]
+    public async Task<ActionResult<IEnumerable<Producto>>> GetProductos(string? titulo, string? autor, string? editorial, string? genero, decimal? precioMin, decimal? precioMax
     )
     {
       var productos = _context.Productos.AsQueryable();
@@ -59,12 +51,12 @@ namespace ComicsAPI.Controllers
     [HttpGet("{id}")]
     public async Task<ActionResult<Producto>> GetProducto(int id)
     {
-      var Producto = await _context.Productos.FindAsync(id);
-      if (Producto == null)
+      var producto = await _context.Productos.FirstOrDefaultAsync(p => p.Id == id);
+      if (producto == null)
       {
         return NotFound();
       }
-      return Producto;
+      return Ok(producto);
     }
 
     // CATEGORIAS
@@ -84,9 +76,10 @@ namespace ComicsAPI.Controllers
         return NotFound("Producto no existe!");
       }
 
-      var productoDeseadoExistente = await _context.ProductosDeseados.FirstOrDefaultAsync(pd => pd.UserId == userId && pd.ProductoId == productoId);
+      var productoDeseadoExistente = await _context.ProductosDeseados
+          .AnyAsync(pd => pd.UserId == userId && pd.ProductoId == productoId);
 
-      if (productoDeseadoExistente != null)
+      if (productoDeseadoExistente)
       {
         return BadRequest("Producto ya está en la lista de deseados!");
       }
@@ -101,25 +94,10 @@ namespace ComicsAPI.Controllers
       _context.ProductosDeseados.Add(productoDeseado);
       await _context.SaveChangesAsync();
 
-      return Ok("Producto añadido a la lista de deseados!");
+      return Ok(new { Message = "Producto añadido a la lista de deseados!", Producto = producto });
     }
 
-    [HttpDelete("deseados/{productoId}")]
-    public async Task<ActionResult> RemoveProductoDeseado(int userId, int productoId)
-    {
-      var productoDeseado = await _context.ProductosDeseados.FirstOrDefaultAsync(pd => pd.UserId == userId && pd.ProductoId == productoId);
-
-      if (productoDeseado == null)
-      {
-        return NotFound();
-      }
-      _context.ProductosDeseados.Remove(productoDeseado);
-      await _context.SaveChangesAsync();
-
-      return Ok();
-    }
-
-    [HttpGet("deseados/{userId}")]
+    [HttpGet("deseados/usuario/{userId}")]
     public async Task<ActionResult<IEnumerable<Producto>>> GetProductoDeseados(int userId)
     {
       var productosDeseados = await _context.ProductosDeseados
@@ -129,6 +107,23 @@ namespace ComicsAPI.Controllers
         .ToListAsync();
 
       return Ok(productosDeseados);
+    }
+
+    [HttpDelete("deseados/{productoId}")]
+    public async Task<ActionResult> RemoveProductoDeseado(int userId, int productoId)
+    {
+      var productoDeseado = await _context.ProductosDeseados
+        .FirstOrDefaultAsync(pd => pd.UserId == userId && pd.ProductoId == productoId);
+
+      if (productoDeseado == null)
+      {
+        return NotFound("El producto no está en la lista de deseados.");
+      }
+
+      _context.ProductosDeseados.Remove(productoDeseado);
+      await _context.SaveChangesAsync();
+
+      return Ok("Producto eliminado de la lista de deseados.");
     }
   }
 }
