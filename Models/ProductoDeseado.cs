@@ -5,6 +5,6 @@ namespace ComicsAPI.Models
     public int Id { get; set; }
     public int ProductoId { get; set; }
     public int UserId { get; set; }
-    public Producto? Producto { get; set; }
+    public Producto Producto { get; set; }
   }
 }
