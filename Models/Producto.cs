@@ -7,7 +7,7 @@ namespace ComicsAPI.Models {
     public DateTime FechaPublicacion { get; set; }
     public required string Genero { get; set; }
     public decimal Precio { get; set; }
-    public required string Imagen { get; set; }
+    public required string ImageURL { get; set; }
     public required string Descripcion { get; set; }
   }
 }
