@@ -81,20 +81,27 @@ namespace ComicsAPI.Controllers
       var producto = await _context.Productos.FindAsync(productoId);
       if (producto == null)
       {
-        return NotFound("Producto no encontrado");
+        return NotFound("Producto no existe!");
       }
 
+      var productoDeseadoExistente = await _context.ProductosDeseados.FirstOrDefaultAsync(pd => pd.UserId == userId && pd.ProductoId == productoId);
+
+      if (productoDeseadoExistente != null)
+      {
+        return BadRequest("Producto ya está en la lista de deseados!");
+      }
 
       var productoDeseado = new ProductoDeseado
       {
         UserId = userId,
-        ProductoId = productoId
+        ProductoId = productoId,
+        Producto = producto
       };
 
       _context.ProductosDeseados.Add(productoDeseado);
       await _context.SaveChangesAsync();
 
-      return Ok();
+      return Ok("Producto añadido a la lista de deseados!");
     }
 
     [HttpDelete("deseados/{productoId}")]
