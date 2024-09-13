@@ -1,11 +1,27 @@
 using ComicsAPI.Data;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Swagger configuration for API documentation
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c =>
+  {
+    c.SwaggerDoc("v1", new OpenApiInfo
+    {
+      Title = "API de Comics",
+      Version = "v1",
+      Description = "API para la gestión de productos de una tienda de cómics",
+      Contact = new OpenApiContact
+      {
+        Name = "Soporte de ComicsAPI",
+        Email = "soporte@example.com",
+        Url = new Uri("https://example.com")
+      }
+    });
+  }
+);
 // CORS policy to allow all origins, methods and headers
 builder.Services.AddCors(options =>
 {
