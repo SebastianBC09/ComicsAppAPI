@@ -14,8 +14,29 @@ namespace ComicsAPI.Controllers {
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Producto>>> GetProductos() {
-      return await _context.Productos.ToListAsync();
+    public async Task<ActionResult<IEnumerable<Producto>>> GetProductos(
+      string? titulo, string? autor, string? editorial, string? genero, decimal? precioMin, decimal? precioMax
+    ) {
+      var productos = _context.Productos.AsQueryable();
+      if(!string.IsNullOrEmpty(titulo)) {
+        productos = productos.Where(p => p.Titulo.Contains(titulo));
+      }
+      if(!string.IsNullOrEmpty(autor)) {
+        productos = productos.Where(p => p.Autor.Contains(autor));
+      }
+      if(!string.IsNullOrEmpty(editorial)) {
+        productos = productos.Where(p => p.Editorial.Contains(editorial));
+      }
+      if(!string.IsNullOrEmpty(genero)) {
+        productos = productos.Where(p => p.Genero.Contains(genero));
+      }
+      if(precioMin.HasValue) {
+        productos = productos.Where(p => p.Precio >= precioMin);
+      }
+      if(precioMax.HasValue) {
+        productos = productos.Where(p => p.Precio <= precioMax);
+      }
+      return await productos.ToListAsync();
     }
 
     [HttpGet("{id}")]
@@ -25,28 +46,6 @@ namespace ComicsAPI.Controllers {
         return NotFound();
       }
       return Producto;
-    }
-
-    [HttpPost]
-    public async Task<ActionResult<Producto>> PostProducto(Producto producto) {
-      _context.Productos.Add(producto);
-      await _context.SaveChangesAsync();
-      return CreatedAtAction(nameof(GetProducto), new { id = producto.Id }, producto);
-    }
-
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteProducto(int id) {
-      var Producto = await _context.Productos.FindAsync(id);
-      if(Producto == null) {
-        return NotFound();
-      }
-      _context.Productos.Remove(Producto);
-      await _context.SaveChangesAsync();
-      return NoContent();
-    }
-
-    private bool ProductoExists(int id) {
-      return _context.Productos.Any(e => e.Id == id);
     }
   }
 }
