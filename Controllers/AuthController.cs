@@ -38,7 +38,7 @@ namespace ComicsAPI.Controllers
 
     // LOGIN
     [HttpPost("login")]
-    public async Task<IActionResult> Login([FromBody] LoginRequest loginRequest)
+    public async Task<IActionResult> Login([FromBody] Login loginRequest)
     {
       var usuario = await _context.Usuarios.FirstOrDefaultAsync(u => u.Email == loginRequest.Email);
       if (usuario == null)
