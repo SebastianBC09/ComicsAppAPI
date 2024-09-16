@@ -1,8 +1,12 @@
 using ComicsAPI.Data;
+using ComicsAPI.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Add Dependency Injection for PasswordService
+builder.Services.AddSingleton<PasswordService>();
 
 // Swagger configuration for API documentation
 builder.Services.AddEndpointsApiExplorer();
