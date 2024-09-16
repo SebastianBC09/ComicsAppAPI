@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace ComicsAPI.Data
+namespace ComicsAPI.Models
 {
   public class Usuario
   {
