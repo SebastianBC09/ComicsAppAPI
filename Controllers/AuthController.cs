@@ -52,7 +52,14 @@ namespace ComicsAPI.Controllers
         return Unauthorized("El correo electronico o la contrasena son incorrectos");
       }
 
-      return Ok("Inicio de sesion exitoso!");
+      var userResponse = new
+      {
+        Id = usuario.Id,
+        NombreUsuario = usuario.NombreUsuario,
+        Email = usuario.Email,
+      };
+
+      return Ok(new { user = userResponse, message = "Inicio de sesión exitoso!" });
     }
   }
 }

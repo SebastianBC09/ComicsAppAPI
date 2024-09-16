@@ -15,7 +15,7 @@ namespace ComicsAPI.Controllers
       _context = context;
     }
 
-    [HttpGet()]
+    [HttpGet("{userId}")]
     public async Task<ActionResult<IEnumerable<Producto>>> GetProductoDeseados(int userId)
     {
       var productosDeseados = await _context.ProductosDeseados
