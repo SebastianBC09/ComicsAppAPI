@@ -19,11 +19,13 @@ namespace ComicsAPI.Controllers
     public async Task<ActionResult<IEnumerable<Producto>>> GetProductoDeseados(int userId)
     {
       var productosDeseados = await _context.ProductosDeseados
-        .Where(pd => pd.UserId == userId)
-        .Include(pd => pd.Producto)
-        .Select(pd => pd.Producto)
+        .Where(w => w.UserId == userId)
         .ToListAsync();
 
+      if (productosDeseados == null)
+      {
+        return NotFound();
+      }
       return Ok(productosDeseados);
     }
 
